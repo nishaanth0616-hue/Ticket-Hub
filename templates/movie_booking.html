@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <img src="{{ movie.image }}" referrerpolicy="no-referrer" class="img-fluid rounded mb-3 w-100" style="max-height:400px; object-fit:cover;">
+                <h3 class="fw-bold">{{ movie.title }}</h3>
+                <p class="text-muted">{{ movie.genre }} | <i class="bi bi-star-fill text-warning"></i> {{ movie.rating }}</p>
+                <div class="alert alert-info">
+                    Ticket Price: <strong>₹<span id="pricePerSeat">{{ movie.price }}</span></strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm booking-container">
+            <div class="card-body p-4">
+                <h4 class="mb-4">Select Your Seats</h4>
+                <form method="POST" action="{{ url_for('add_to_cart') }}" id="bookingForm">
+                    <input type="hidden" name="type" value="Movie">
+                    <input type="hidden" name="details" id="formDetails" value="">
+                    <input type="hidden" name="price" value="{{ movie.price }}">
+                    <input type="hidden" name="seats" id="formSeats" value="0">
+                    <input type="hidden" name="selected_seats" id="formSeatNumbers" value="">
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Select Theatre</label>
+                        <select class="form-select" id="theatreSelect" required>
+                            {% for theatre in movie.theatres %}
+                                <option value="{{ theatre }}">{{ theatre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Select Time</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for time in movie.timings %}
+                                <input type="radio" class="btn-check time-radio" name="movie_time" id="time_{{ loop.index }}" value="{{ time }}" required {% if loop.index == 1 %}checked{% endif %}>
+                                <label class="btn btn-outline-primary" for="time_{{ loop.index }}">{{ time }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Seat Layout -->
+                    <div class="seat-map bg-light p-4 rounded text-center mb-4 border">
+                        <div class="screen mb-4 bg-secondary text-white py-1 shadow-sm mx-auto" style="width: 80%; border-radius:10px 10px 0 0;">SCREEN THIS WAY</div>
+                        <div class="d-flex justify-content-center">
+                            <div class="seats-container custom-scrollbar">
+                                {% for row in ['A', 'B', 'C', 'D', 'E'] %}
+                                    <div class="d-flex justify-content-center align-items-center mb-2">
+                                        <div class="me-3 fw-bold text-muted" style="width: 20px;">{{ row }}</div>
+                                        {% for col in range(1, 11) %}
+                                            {% if col == 6 %}<div class="mx-3"></div>{% endif %}
+                                            <div class="seat me-2" data-seat="{{ row }}{{ col }}" title="{{ row }}{{ col }}"></div>
+                                        {% endfor %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center mt-4 gap-4 text-muted small">
+                            <div class="d-flex align-items-center"><div class="seat-legend me-1 border"></div> Available</div>
+                            <div class="d-flex align-items-center"><div class="seat-legend me-1 border bg-primary bg-opacity-75"></div> Selected</div>
+                            <div class="d-flex align-items-center"><div class="seat-legend me-1 border bg-secondary bg-opacity-50 text-decoration-line-through"></div> Sold</div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-end mt-4 pt-3 border-top">
+                        <div>
+                            <div class="text-muted mb-1">Total Amount</div>
+                            <h3 class="fw-bold mb-0 text-primary">₹<span id="totalPrice">0</span></h3>
+                            <small id="selectedSeatsLabel" class="text-muted">No seats selected</small>
+                        </div>
+                        <button type="button" class="btn btn-primary px-5 py-2 btn-lg" id="bookBtn" disabled>Add to Cart</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const seats = document.querySelectorAll('.seat:not(.legend)');
+    const totalPriceEl = document.getElementById('totalPrice');
+    const selectedSeatsLabel = document.getElementById('selectedSeatsLabel');
+    const bookBtn = document.getElementById('bookBtn');
+    const price = parseInt("{{ movie.price }}") || 0;
+    
+    // Simulate some booked seats randomly
+    seats.forEach(seat => {
+        if(Math.random() < 0.2) {
+            seat.classList.add('booked');
+        }
+    });
+
+    let selectedSeatsArr = [];
+
+    seats.forEach(seat => {
+        seat.addEventListener('click', () => {
+            if (seat.classList.contains('booked')) return;
+            
+            seat.classList.toggle('selected');
+            const seatNum = seat.dataset.seat;
+            
+            if (seat.classList.contains('selected')) {
+                selectedSeatsArr.push(seatNum);
+            } else {
+                selectedSeatsArr = selectedSeatsArr.filter(s => s !== seatNum);
+            }
+            
+            updateBookingInfo();
+        });
+    });
+
+    function updateBookingInfo() {
+        const count = selectedSeatsArr.length;
+        totalPriceEl.innerText = count * price;
+        selectedSeatsLabel.innerText = count > 0 ? selectedSeatsArr.join(', ') : 'No seats selected';
+        bookBtn.disabled = count === 0;
+        
+        document.getElementById('formSeats').value = count;
+        document.getElementById('formSeatNumbers').value = selectedSeatsArr.join(', ');
+    }
+
+    bookBtn.addEventListener('click', () => {
+        const theatre = document.getElementById('theatreSelect').value;
+        const time = document.querySelector('input[name="movie_time"]:checked').value;
+        document.getElementById('formDetails').value = `{{ movie.title }} at ${theatre} (${time})`;
+        document.getElementById('bookingForm').submit();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "title": "Inception",
+    "genre": "Sci-Fi/Action",
+    "rating": "8.8",
+    "theatres": ["PVR Cinemas", "Cinepolis", "INOX"],
+    "timings": ["10:00 AM", "01:30 PM", "06:00 PM"],
+    "price": 250,
+    "image": "https://upload.wikimedia.org/wikipedia/en/2/2e/Inception_%282010%29_theatrical_poster.jpg"
+  },
+  {
+    "id": 2,
+    "title": "Avengers: Endgame",
+    "genre": "Action/Adventure",
+    "rating": "8.4",
+    "theatres": ["INOX", "Satyam Cinemas"],
+    "timings": ["11:00 AM", "03:00 PM", "08:00 PM"],
+    "price": 300,
+    "image": "https://upload.wikimedia.org/wikipedia/en/0/0d/Avengers_Endgame_poster.jpg"
+  },
+  {
+    "id": 3,
+    "title": "The Dark Knight",
+    "genre": "Action/Thriller",
+    "rating": "9.0",
+    "theatres": ["PVR Cinemas", "INOX", "AGS Cinemas"],
+    "timings": ["12:00 PM", "04:30 PM", "09:00 PM"],
+    "price": 250,
+    "image": "https://upload.wikimedia.org/wikipedia/en/1/1c/The_Dark_Knight_%282008_film%29.jpg"
+  },
+  {
+    "id": 4,
+    "title": "Interstellar",
+    "genre": "Sci-Fi/Drama",
+    "rating": "8.6",
+    "theatres": ["Cinepolis", "SPI Cinemas"],
+    "timings": ["10:30 AM", "02:45 PM", "07:15 PM"],
+    "price": 280,
+    "image": "https://upload.wikimedia.org/wikipedia/en/b/bc/Interstellar_film_poster.jpg"
+  },
+  {
+    "id": 5,
+    "title": "Spider-Man: No Way Home",
+    "genre": "Action/Sci-Fi",
+    "rating": "8.3",
+    "theatres": ["PVR Cinemas", "Satyam Cinemas"],
+    "timings": ["09:00 AM", "01:00 PM", "05:00 PM", "09:30 PM"],
+    "price": 320,
+    "image": "https://upload.wikimedia.org/wikipedia/en/0/00/Spider-Man_No_Way_Home_poster.jpg"
+  },
+  {
+    "id": 6,
+    "title": "Avatar: The Way of Water",
+    "genre": "Sci-Fi/Action",
+    "rating": "7.6",
+    "theatres": ["IMAX", "INOX", "Cinepolis"],
+    "timings": ["11:15 AM", "04:00 PM", "08:45 PM"],
+    "price": 400,
+    "image": "https://upload.wikimedia.org/wikipedia/en/5/54/Avatar_The_Way_of_Water_poster.jpg"
+  }
+]

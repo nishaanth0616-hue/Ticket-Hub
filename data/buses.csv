@@ -1,0 +1,11 @@
+id,operator,type,source,destination,departure,arrival,price,seats
+1,RedBus Express,AC,Chennai,Coimbatore,10:00 PM,06:00 AM,800,20
+2,KPN Travels,Non-AC,Chennai,Coimbatore,11:00 PM,07:00 AM,500,15
+3,SRS Travels,AC Sleeper,Bangalore,Chennai,09:00 PM,05:00 AM,1000,10
+4,YBM Travels,AC,Hyderabad,Bangalore,08:00 PM,06:00 AM,1200,25
+5,Parveen Travels,AC Sleeper,Chennai,Madurai,10:30 PM,05:30 AM,950,22
+6,VRL Travels,AC Multi-Axle,Pune,Mumbai,06:00 AM,09:30 AM,600,40
+7,Neeta Travels,Non-AC Seater,Mumbai,Goa,08:00 PM,08:00 AM,850,30
+8,IntrCity SmartBus,AC Sleeper,Delhi,Jaipur,11:00 PM,05:00 AM,750,20
+9,Kallada Tours,AC Sleeper,Bangalore,Kochi,09:30 PM,07:30 AM,1500,24
+10,Orange Tours,AC Semi-Sleeper,Hyderabad,Chennai,07:00 PM,06:00 AM,1100,28

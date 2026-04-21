@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12 d-flex align-items-center justify-content-between border-bottom pb-3">
+            <h2 class="fw-bold"><i class="fa-solid fa-list-check me-2 text-primary"></i> My Bookings</h2>
+            <div class="text-muted">Welcome back, {{ current_user.username }}</div>
+        </div>
+    </div>
+
+    {% if bookings %}
+        <div class="row">
+            {% for booking in bookings %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+                        <div class="card-header border-0 text-white py-3 
+                            {% if booking.booking_type == 'movie' %} bg-danger
+                            {% elif booking.booking_type == 'bus' %} bg-warning text-dark
+                            {% else %} bg-primary {% endif %}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-uppercase">
+                                    {% if booking.booking_type == 'movie' %} <i class="fa-solid fa-film me-1"></i>
+                                    {% elif booking.booking_type == 'bus' %} <i class="fa-solid fa-bus me-1"></i>
+                                    {% else %} <i class="fa-solid fa-train me-1"></i> {% endif %}
+                                    {{ booking.booking_type }}
+                                </span>
+                                <span class="badge bg-light text-dark rounded-pill">{{ booking.status }}</span>
+                            </div>
+                        </div>
+                        <div class="card-body bg-light">
+                            <p class="text-muted small mb-1">Booking ID: #{{ booking.id }}</p>
+                            <h5 class="fw-bold mb-3">Ref ID: {{ booking.reference_id }}</h5>
+                            
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted"><i class="fa-solid fa-chair me-1"></i> Seats:</span>
+                                <span class="fw-bold">{{ booking.seats }}</span>
+                            </div>
+                            
+                            {% if booking.pnr %}
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted"><i class="fa-solid fa-hashtag me-1"></i> PNR:</span>
+                                    <span class="fw-bold text-primary">{{ booking.pnr }}</span>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="d-flex justify-content-between mt-3 pt-3 border-top">
+                                <span class="text-muted">Total Paid:</span>
+                                <span class="fw-bold text-success">₹{{ booking.total_amount }}</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white text-muted small text-center">
+                            Booked on: {{ booking.created_at.strftime('%Y-%m-%d %H:%M') }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fa-solid fa-ticket-simple fa-4x text-muted mb-3 opacity-50"></i>
+            <h4>No bookings found</h4>
+            <p class="text-muted">You haven't made any bookings yet.</p>
+            <a href="{{ url_for('index') }}" class="btn btn-primary mt-3 rounded-pill px-4">Start Exploring</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

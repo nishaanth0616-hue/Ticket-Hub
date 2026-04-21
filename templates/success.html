@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-6 text-center">
+        <div class="card shadow border-0 py-5 form-card">
+            <div class="card-body">
+                <div class="display-1 text-success mb-4 animate-scale">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <h2 class="fw-bold">Payment Successful!</h2>
+                <p class="text-muted px-4">Your booking has been confirmed. The ticket details have been sent to your registered email address.</p>
+                <p class="mb-4"><strong>PNR / Booking ID:</strong> <span class="text-primary">{{ range(10000000, 99999999) | random }}</span></p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary px-5 py-2 rounded-pill">Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .animate-scale {
+        animation: scale 0.5s ease-in-out;
+    }
+    @keyframes scale {
+        0% { transform: scale(0); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+</style>
+{% endblock %}

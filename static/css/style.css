@@ -1,0 +1,270 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;600;700&display=swap');
+
+:root {
+    --bg-main: #0a0a0f;
+    --bg-surface: #14141f;
+    --bg-surface-light: #1e1e2d;
+    --primary: #00f2fe;
+    --primary-glow: rgba(0, 242, 254, 0.4);
+    --secondary: #4facfe;
+    --accent: #ff0844;
+    --accent-glow: rgba(255, 8, 68, 0.4);
+    --text-bright: #ffffff;
+    --text-muted: #8b8b9e;
+    --border-color: rgba(255, 255, 255, 0.1);
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-bright);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Typography Enhancements */
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+}
+
+/* Glassmorphism Navbar */
+.navbar {
+    background: rgba(10, 10, 15, 0.8) !important;
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+}
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.5rem;
+}
+.navbar-brand span {
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.nav-link {
+    color: var(--text-bright) !important;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+.nav-link:hover {
+    color: var(--primary) !important;
+    text-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* Premium Card Aesthetics (Dark Theme) */
+.card {
+    border-radius: 20px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: var(--text-bright);
+}
+
+.category-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: var(--primary) !important;
+    box-shadow: 0 15px 35px rgba(0, 242, 254, 0.15) !important;
+}
+
+/* Forms & Auth */
+.auth-card {
+    background: linear-gradient(145deg, var(--bg-surface), var(--bg-surface-light));
+    border-top: 2px solid var(--primary) !important;
+}
+.form-control, .form-select {
+    padding: 0.8rem 1.25rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-main) !important;
+    color: var(--text-bright) !important;
+}
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 4px var(--primary-glow);
+    border-color: var(--primary);
+}
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+label.form-label {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Modifying background elements */
+.alert-info {
+    background-color: rgba(0, 242, 254, 0.1);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.bg-light {
+    background-color: var(--bg-surface-light) !important;
+}
+.text-dark {
+    color: var(--text-bright) !important;
+}
+
+/* Button Upgrades */
+.btn {
+    border-radius: 12px;
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+}
+.btn-primary {
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    border: none;
+    color: #000;
+}
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px var(--primary-glow);
+    color: #000;
+}
+.btn-danger {
+    background: linear-gradient(45deg, #ff0844, #ffb199);
+    border: none;
+    color: #fff;
+}
+.btn-danger:hover {
+    box-shadow: 0 8px 20px var(--accent-glow);
+    color: #fff;
+}
+.btn-success {
+    background: linear-gradient(45deg, #0ba360, #3cba92);
+    border: none;
+}
+
+/* Movie/Route Cards */
+.movie-card img {
+    border-radius: 20px 20px 0 0;
+}
+.route-card {
+    border-left: 4px solid var(--primary) !important;
+    background: var(--bg-surface);
+}
+.route-card:hover {
+    box-shadow: 0 10px 30px var(--primary-glow) !important;
+}
+.card-title {
+    color: var(--text-bright);
+}
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* Seat Maps */
+.seats-container {
+    padding-bottom: 20px;
+    overflow-x: auto;
+}
+.seat {
+    width: 40px;
+    height: 40px;
+    background-color: var(--bg-surface-light);
+    border: 2px solid var(--border-color);
+    border-radius: 8px 8px 4px 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.seat:hover:not(.booked) {
+    border-color: var(--primary);
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+.seat.selected {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+.seat.booked {
+    background-color: #2a2a35;
+    border-color: #1a1a25;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.seat.booked::after {
+    color: #ff0844;
+}
+
+/* Bus Seats */
+.bus-seat {
+    width: 45px;
+    height: 45px;
+    background-color: var(--bg-surface-light);
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+}
+.bus-seat:hover:not(.booked) {
+    border-color: #0ba360;
+    box-shadow: 0 0 15px rgba(11, 163, 96, 0.4);
+}
+.bus-seat.selected {
+    background-color: #0ba360;
+    border-color: #0ba360;
+    box-shadow: 0 0 20px rgba(11, 163, 96, 0.4);
+}
+.bus-seat.booked {
+    background-color: #2a2a35;
+    border-color: #1a1a25;
+}
+
+/* Tables and Inputs specific */
+hr {
+    border-color: var(--border-color);
+}
+
+.text-success {
+    color: #00f2fe !important;
+}
+.text-danger {
+    color: #ff0844 !important;
+}
+/* Responsive Design Refinements */
+@media (max-width: 768px) {
+    .seats-container {
+        padding-bottom: 30px;
+    }
+    .seat {
+        width: 30px;
+        height: 30px;
+        margin-right: 5px !important;
+    }
+    .bus-seat {
+        width: 32px;
+        height: 32px;
+    }
+    .form-card {
+        padding: 10px !important;
+    }
+    .card-body {
+        padding: 1.5rem 1rem !important;
+    }
+    h2 { font-size: 1.7rem; }
+    h4 { font-size: 1.3rem; }
+}
+
+@media (max-width: 480px) {
+    .seat {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px 6px 3px 3px;
+        margin-right: 3px !important;
+    }
+    .bus-seat {
+        width: 26px;
+        height: 26px;
+    }
+    .seats-container .me-3 {
+        font-size: 12px;
+        width: 15px !important;
+    }
+}
+

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow border-0 form-card">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="bi bi-shield-lock text-success display-4"></i>
+                    <h3 class="fw-bold mt-2">Secure Payment</h3>
+                    <p class="text-muted">Total Amount: <strong class="text-dark fs-5">₹{{ total_amount }}</strong></p>
+                </div>
+                
+                <ul class="nav nav-pills mb-4 nav-justified" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#card">Card</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#upi">UPI</button>
+                    </li>
+                </ul>
+                
+                <form method="POST" action="{{ url_for('process_payment') }}">
+                    <div class="tab-content border p-4 rounded bg-light" id="pills-tabContent">
+                        <div class="tab-pane fade show active" id="card">
+                            <div class="mb-3">
+                                <label class="form-label small text-muted">Card Number</label>
+                                <input type="text" class="form-control" placeholder="1234 5678 9101 1121" required>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <label class="form-label small text-muted">Expiry</label>
+                                    <input type="text" class="form-control" placeholder="MM/YY" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small text-muted">CVV</label>
+                                    <input type="password" class="form-control" placeholder="123" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 mt-3">
+                                <label class="form-label small text-muted">Name on Card</label>
+                                <input type="text" class="form-control" placeholder="John Doe" required>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="upi">
+                            <div class="text-center mb-3">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=ticketbooker@dummyupi&pn=TicketHub&am={{ total_amount }}" alt="Scan to Pay QR Code" class="img-fluid border rounded p-3 bg-white shadow-sm mb-3" style="width: 200px; height: 200px; border-radius: 15px;">
+                                <p class="text-muted small">Scan QR code using any UPI app to pay <strong>₹{{ total_amount }}</strong></p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small text-muted">Or enter UPI ID</label>
+                                <input type="text" class="form-control text-center" placeholder="username@upi">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success w-100 py-3 mt-4 fw-bold fs-5 shadow-sm">Pay ₹{{ total_amount }}</button>
+                </form>
+                <div class="text-center mt-3 small text-muted">
+                    <i class="bi bi-lock-fill"></i> Payments are 100% secure & encrypted
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

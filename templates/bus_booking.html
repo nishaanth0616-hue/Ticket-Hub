@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0 mb-4 bg-success text-white">
+            <div class="card-body">
+                <h4 class="mb-3"><i class="bi bi-bus-front"></i> {{ bus.operator }}</h4>
+                <div class="badge bg-white text-success mb-3">{{ bus.type }}</div>
+                <div class="d-flex justify-content-between mb-3">
+                    <div>
+                        <div class="fw-bold">{{ bus.departure }}</div>
+                        <small>{{ bus.source|capitalize }}</small>
+                    </div>
+                    <i class="bi bi-arrow-right"></i>
+                    <div class="text-end">
+                        <div class="fw-bold">{{ bus.arrival }}</div>
+                        <small>{{ bus.destination|capitalize }}</small>
+                    </div>
+                </div>
+                <div class="fs-5 mt-2 pt-2 border-top border-success-subtle">
+                    Price: <strong>₹{{ bus.price }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 form-card" style="border-top: 4px solid #198754 !important;">
+            <div class="card-body p-0">
+                <!-- Fallback Routing Map using Valid Contextual Focus Embed -->
+                <div id="map-container" class="position-relative" style="height: 300px; width: 100%; overflow: hidden; border-radius: 20px;">
+                    <!-- Fixed Google Map strictly querying Destination to guarantee render without API X-Frame blocks -->
+                    <iframe 
+                        width="100%" 
+                        height="100%" 
+                        style="border:0;" 
+                        loading="lazy" 
+                        allowfullscreen 
+                        referrerpolicy="no-referrer-when-downgrade" 
+                        src="https://maps.google.com/maps?q={{ bus.destination }}&t=&z=11&ie=UTF8&iwloc=&output=embed">
+                    </iframe>
+                    <!-- Simulated Route Banner Layer -->
+                    <div class="position-absolute top-0 start-0 w-100 p-2 text-center" style="background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(5px);">
+                        <div class="d-flex justify-content-center align-items-center text-light fw-bold" style="letter-spacing: 1px;">
+                            <span class="text-success">{{ bus.source }}</span>
+                            <span class="mx-3 text-muted">--------- <i class="bi bi-bus-front fs-5 text-secondary"></i> ---------></span>
+                            <span class="text-danger">{{ bus.destination }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h4 class="mb-4">Select Bus Seats</h4>
+                
+                <form method="POST" action="{{ url_for('add_to_cart') }}" id="busForm">
+                    <input type="hidden" name="type" value="Bus">
+                    <input type="hidden" name="details" value="{{ bus.operator }} - {{ bus.source }} to {{ bus.destination }}">
+                    <input type="hidden" name="price" value="{{ bus.price }}">
+                    <input type="hidden" name="seats" id="bFormSeats" value="0">
+                    <input type="hidden" name="selected_seats" id="bFormSeatNumbers" value="">
+
+                    <div class="row mb-5 justify-content-center">
+                        <div class="col-auto">
+                            <div class="border rounded p-4 pb-2 bg-light d-flex" style="width: intrinsic;">
+                                <div class="me-4 border-end pe-4">
+                                    <div class="text-center mb-3">
+                                        <i class="bi bi-steering fs-3 text-secondary"></i>
+                                    </div>
+                                    <!-- Left Column -->
+                                    <div class="d-flex flex-column gap-2">
+                                        {% for r in range(1, 11) %}
+                                            <div class="d-flex gap-2">
+                                                <div class="bus-seat border ms-1" data-seat="L{{r}}1" title="L{{r}}1"></div>
+                                                <div class="bus-seat border" data-seat="L{{r}}2" title="L{{r}}2"></div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="height: 50px;"></div>
+                                    <!-- Right Column -->
+                                    <div class="d-flex flex-column gap-2">
+                                        {% for r in range(1, 11) %}
+                                            <div class="d-flex gap-2">
+                                                <div class="bus-seat border" data-seat="R{{r}}1" title="R{{r}}1"></div>
+                                                <div class="bus-seat border me-1" data-seat="R{{r}}2" title="R{{r}}2"></div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-4 mb-4 small text-muted">
+                        <div class="d-flex align-items-center"><div class="bus-seat bg-white border me-2"></div> Available</div>
+                        <div class="d-flex align-items-center"><div class="bus-seat bg-success border-success me-2"></div> Selected</div>
+                        <div class="d-flex align-items-center"><div class="bus-seat bg-secondary bg-opacity-50 border-secondary me-2"></div> Booked</div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-end mt-4 pt-3 border-top">
+                        <div>
+                            <div class="text-muted mb-1">Total Fare</div>
+                            <h3 class="fw-bold mb-0 text-success">₹<span id="bTotalPrice">0</span></h3>
+                            <small id="bSelectedSeatsLabel" class="text-muted">No seats selected</small>
+                        </div>
+                        <button type="button" class="btn btn-success px-5 py-2 btn-lg" id="bBookBtn" disabled>Proceed</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const busSeats = document.querySelectorAll('.bus-seat');
+    const bPrice = parseInt("{{ bus.price }}") || 0;
+    let bSelected = [];
+
+    // Randomize booked seats based on availability roughly
+    const bookedCount = 40 - (parseInt("{{ bus.seats }}") || 0);
+    let c = 0;
+    while(c < bookedCount) {
+        let idx = Math.floor(Math.random() * busSeats.length);
+        if(!busSeats[idx].classList.contains('booked')) {
+            busSeats[idx].classList.add('booked');
+            busSeats[idx].style.pointerEvents = 'none';
+            c++;
+        }
+    }
+
+    busSeats.forEach(seat => {
+        seat.addEventListener('click', () => {
+            if(seat.classList.contains('booked')) return;
+            
+            seat.classList.toggle('selected');
+            const dataSeat = seat.dataset.seat;
+            if(seat.classList.contains('selected')) bSelected.push(dataSeat);
+            else bSelected = bSelected.filter(s => s !== dataSeat);
+            
+            document.getElementById('bTotalPrice').innerText = bSelected.length * bPrice;
+            document.getElementById('bSelectedSeatsLabel').innerText = bSelected.length ? bSelected.join(', ') : 'No seats selected';
+            document.getElementById('bFormSeats').value = bSelected.length;
+            document.getElementById('bFormSeatNumbers').value = bSelected.join(', ');
+            document.getElementById('bBookBtn').disabled = bSelected.length === 0;
+        });
+    });
+
+    document.getElementById('bBookBtn').addEventListener('click', () => {
+        document.getElementById('busForm').submit();
+    });
+</script>
+{% endblock %}

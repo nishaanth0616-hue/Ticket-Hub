@@ -1,0 +1,11 @@
+id,train_name,train_no,source,destination,departure,arrival,price,seats
+1,Cheran Express,12673,Chennai,Coimbatore,10:00 PM,06:00 AM,450,50
+2,Shatabdi Exp,12007,Chennai,Bangalore,06:00 AM,11:00 AM,900,30
+3,Rajdhani Exp,22691,Bangalore,Delhi,08:00 PM,06:00 AM,2500,100
+4,Kovai Express,12675,Chennai,Coimbatore,06:10 AM,02:05 PM,300,60
+5,Vande Bharat,20643,Chennai,Coimbatore,02:25 PM,08:15 PM,1200,45
+6,Tejas Express,82613,Chennai,Madurai,06:00 AM,12:15 PM,1350,60
+7,Mumbai Rajdhani,12952,Delhi,Mumbai,04:55 PM,08:35 AM,2700,120
+8,Duronto Express,12224,Ernakulam,Mumbai,09:20 PM,06:15 PM,1800,80
+9,Coromandel Exp,12842,Chennai,Howrah,07:00 AM,10:40 AM,950,150
+10,Navjeevan Exp,12656,Chennai,Ahmedabad,10:10 AM,06:00 PM,850,90

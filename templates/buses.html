@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row mb-5 justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow-sm border-0 p-4 search-card">
+            <h3 class="mb-3"><i class="bi bi-bus-front text-success me-2"></i> Search Buses</h3>
+            <form method="POST" action="{{ url_for('buses') }}" class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label text-muted">From</label>
+                    <input type="text" class="form-control border-0 bg-light" name="source" placeholder="E.g., Chennai" value="{{ request.form.get('source', '') }}" required>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label text-muted">To</label>
+                    <input type="text" class="form-control border-0 bg-light" name="destination" placeholder="E.g., Coimbatore" value="{{ request.form.get('destination', '') }}" required>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-success w-100 py-2">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if request.method == 'POST' %}
+    <h4 class="mb-3">Search Results 
+        {% if buses %}<span class="badge bg-success ms-2">{{ buses|length }} Found</span>{% endif %}
+    </h4>
+    {% if not buses %}
+        <div class="alert alert-warning text-center">No buses found for this route.</div>
+    {% endif %}
+{% else %}
+    <h4 class="mb-3">Available Routes</h4>
+{% endif %}
+
+<div class="row g-3">
+    {% for bus in buses %}
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 route-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="card-title fw-bold m-0">{{ bus.operator }}</h5>
+                    <span class="badge bg-primary">{{ bus.type }}</span>
+                </div>
+                <div class="d-flex justify-content-between text-muted mb-3">
+                    <div>
+                        <div class="fw-bold text-dark fs-5">{{ bus.departure }}</div>
+                        <small>{{ bus.source }}</small>
+                    </div>
+                    <div class="text-center px-3 flex-grow-1">
+                        <small class="d-block">To</small>
+                        <hr class="my-1 border-2 text-muted">
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-dark fs-5">{{ bus.arrival }}</div>
+                        <small>{{ bus.destination }}</small>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-end mt-4">
+                    <div>
+                        <span class="text-success small fw-medium"><i class="bi bi-people"></i> {{ bus.seats }} Seats Left</span>
+                        <div class="fs-4 fw-bold">₹{{ bus.price }}</div>
+                    </div>
+                    <a href="{{ url_for('bus_booking', bus_id=bus.id) }}" class="btn btn-outline-success px-4 rounded-1">View Seats</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
