@@ -2,6 +2,7 @@ import os
 import json
 import sqlite3
 import pandas as pd
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 
 app = Flask(__name__)
@@ -60,11 +61,12 @@ def signup():
         phone = request.form.get('phone')
         email = request.form.get('email')
         password = request.form.get('password')
+        hashed_password = generate_password_hash(password)
         conn = None
         try:
             conn = sqlite3.connect(DB_FILE, timeout=10)
             c = conn.cursor()
-            c.execute("INSERT INTO users (name, phone, email, password) VALUES (?, ?, ?, ?)", (name, phone, email, password))
+            c.execute("INSERT INTO users (name, phone, email, password) VALUES (?, ?, ?, ?)", (name, phone, email, hashed_password))
             conn.commit()
             flash('Account created successfully! Welcome to the future.', 'success')
             return redirect(url_for('login'))
@@ -86,9 +88,9 @@ def login():
         try:
             conn = sqlite3.connect(DB_FILE, timeout=10)
             c = conn.cursor()
-            c.execute("SELECT * FROM users WHERE email=? AND password=?", (email, password))
+            c.execute("SELECT * FROM users WHERE email=?", (email,))
             user = c.fetchone()
-            if user:
+            if user and check_password_hash(user[4], password):
                 session['user_id'] = user[0]
                 session['user_name'] = user[1]
                 return redirect(url_for('index'))
@@ -224,6 +226,13 @@ def checkout():
 def process_payment():
     session.pop('cart', None)
     return render_template('success.html', user=get_current_user())
+
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    return response
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
