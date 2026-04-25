@@ -1,0 +1,7 @@
+id,title,category,location,date,time,price,seats,image
+1,Cyberpunk Neon Nights,Concert,Mumbai Stadium,2026-05-15,08:00 PM,2500,500,https://source.unsplash.com/800x600/?concert-neon
+2,Tech Innovators Summit,Conference,Bangalore IT Park,2026-06-10,09:00 AM,1500,300,https://source.unsplash.com/800x600/?technology-conference
+3,Arijit Singh Live,Music,Delhi Arena,2026-07-20,07:30 PM,3500,1000,https://source.unsplash.com/800x600/?singer-stage
+4,Standup Comedy Festival,Comedy,Chennai Auditorium,2026-05-25,06:00 PM,999,200,https://source.unsplash.com/800x600/?comedy-microphone
+5,Symphony Orchestra,Arts,Hyderabad Theater,2026-08-05,05:00 PM,1200,400,https://source.unsplash.com/800x600/?orchestra-music
+6,EDM Dance Party,Party,Goa Beach Club,2026-12-31,10:00 PM,4000,800,https://source.unsplash.com/800x600/?dj-party

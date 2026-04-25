@@ -15,6 +15,8 @@ def init_db():
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS users
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT, email TEXT UNIQUE, password TEXT)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS bookings
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, type TEXT, details TEXT, price REAL, seats INTEGER, selected_seats TEXT, total REAL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
     conn.commit()
     conn.close()
 
@@ -47,6 +49,18 @@ def load_data(dtype):
         return df.to_dict(orient='records')
     elif dtype == 'trains':
         df = pd.read_csv(os.path.join(data_dir, 'trains.csv'))
+        return df.to_dict(orient='records')
+    elif dtype == 'flights':
+        df = pd.read_csv(os.path.join(data_dir, 'flights.csv'))
+        return df.to_dict(orient='records')
+    elif dtype == 'events':
+        df = pd.read_csv(os.path.join(data_dir, 'events.csv'))
+        return df.to_dict(orient='records')
+    elif dtype == 'hotels':
+        df = pd.read_csv(os.path.join(data_dir, 'hotels.csv'))
+        return df.to_dict(orient='records')
+    elif dtype == 'cabs':
+        df = pd.read_csv(os.path.join(data_dir, 'cabs.csv'))
         return df.to_dict(orient='records')
     return []
 
@@ -168,6 +182,80 @@ def train_booking(train_id):
         return "Train not found", 404
     return render_template('train_booking.html', train=train, user=get_current_user())
 
+@app.route('/flights', methods=['GET', 'POST'])
+def flights():
+    flight_data = load_data('flights')
+    if request.method == 'POST':
+        source = request.form.get('source', '').lower()
+        destination = request.form.get('destination', '').lower()
+        if source and destination:
+            flight_data = [f for f in flight_data if f['source'].lower() == source and f['destination'].lower() == destination]
+    return render_template('flights.html', flights=flight_data, user=get_current_user(), request=request)
+
+@app.route('/flights/book/<int:flight_id>')
+def flight_booking(flight_id):
+    if not get_current_user():
+        flash('Please login to book tickets.', 'warning')
+        return redirect(url_for('login'))
+    flights_data = load_data('flights')
+    flight = next((f for f in flights_data if f['id'] == flight_id), None)
+    if not flight:
+        return "Flight not found", 404
+    return render_template('flight_booking.html', flight=flight, user=get_current_user())
+
+@app.route('/events')
+def events():
+    events_data = load_data('events')
+    return render_template('events.html', events=events_data, user=get_current_user())
+
+@app.route('/events/book/<int:event_id>')
+def event_booking(event_id):
+    if not get_current_user():
+        flash('Please login to book tickets.', 'warning')
+        return redirect(url_for('login'))
+    events_data = load_data('events')
+    event = next((e for e in events_data if e['id'] == event_id), None)
+    if not event:
+        return "Event not found", 404
+    return render_template('event_booking.html', event=event, user=get_current_user())
+
+@app.route('/hotels')
+def hotels():
+    hotels_data = load_data('hotels')
+    return render_template('hotels.html', hotels=hotels_data, user=get_current_user())
+
+@app.route('/hotels/book/<int:hotel_id>')
+def hotel_booking(hotel_id):
+    if not get_current_user():
+        flash('Please login to book tickets.', 'warning')
+        return redirect(url_for('login'))
+    hotels_data = load_data('hotels')
+    hotel = next((h for h in hotels_data if h['id'] == hotel_id), None)
+    if not hotel:
+        return "Hotel not found", 404
+    return render_template('hotel_booking.html', hotel=hotel, user=get_current_user())
+
+@app.route('/cabs', methods=['GET', 'POST'])
+def cabs():
+    cab_data = load_data('cabs')
+    if request.method == 'POST':
+        source = request.form.get('source', '').lower()
+        destination = request.form.get('destination', '').lower()
+        if source and destination:
+            cab_data = [c for c in cab_data if c['source'].lower() == source and c['destination'].lower() == destination]
+    return render_template('cabs.html', cabs=cab_data, user=get_current_user(), request=request)
+
+@app.route('/cabs/book/<int:cab_id>')
+def cab_booking(cab_id):
+    if not get_current_user():
+        flash('Please login to book tickets.', 'warning')
+        return redirect(url_for('login'))
+    cabs_data = load_data('cabs')
+    cab = next((c for c in cabs_data if c['id'] == cab_id), None)
+    if not cab:
+        return "Cab not found", 404
+    return render_template('cab_booking.html', cab=cab, user=get_current_user())
+
 @app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
     if not get_current_user():
@@ -224,8 +312,50 @@ def checkout():
 
 @app.route('/process_payment', methods=['POST'])
 def process_payment():
+    user = get_current_user()
+    if not user:
+        return redirect(url_for('login'))
+        
+    cart = session.get('cart', [])
+    if cart:
+        conn = None
+        try:
+            conn = sqlite3.connect(DB_FILE, timeout=10)
+            c = conn.cursor()
+            for item in cart:
+                c.execute("INSERT INTO bookings (user_id, type, details, price, seats, selected_seats, total) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                          (user[0], item['type'], item['details'], item['price'], item['seats'], item['selected_seats'], item['total']))
+            conn.commit()
+        except Exception as e:
+            flash(f'Error saving booking: {str(e)}', 'danger')
+        finally:
+            if conn:
+                conn.close()
+                
     session.pop('cart', None)
-    return render_template('success.html', user=get_current_user())
+    return render_template('success.html', user=user)
+
+@app.route('/my_bookings')
+def my_bookings():
+    user = get_current_user()
+    if not user:
+        return redirect(url_for('login'))
+        
+    conn = None
+    bookings = []
+    try:
+        conn = sqlite3.connect(DB_FILE, timeout=10)
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        c.execute("SELECT * FROM bookings WHERE user_id=? ORDER BY created_at DESC", (user[0],))
+        bookings = c.fetchall()
+    except Exception as e:
+        flash(f'Error fetching bookings: {str(e)}', 'danger')
+    finally:
+        if conn:
+            conn.close()
+            
+    return render_template('my_bookings.html', user=user, bookings=bookings)
 
 @app.after_request
 def add_header(response):

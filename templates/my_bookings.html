@@ -3,65 +3,65 @@
 {% block content %}
 <div class="container py-5">
     <div class="row mb-4">
-        <div class="col-12 d-flex align-items-center justify-content-between border-bottom pb-3">
-            <h2 class="fw-bold"><i class="fa-solid fa-list-check me-2 text-primary"></i> My Bookings</h2>
-            <div class="text-muted">Welcome back, {{ current_user.username }}</div>
+        <div class="col-12 d-flex align-items-center justify-content-between border-bottom border-secondary pb-3">
+            <h2 class="fw-bold"><i class="bi bi-list-check me-2 text-primary"></i> My Bookings</h2>
+            <div class="text-muted">Welcome back, {{ user[1] }}</div>
         </div>
     </div>
 
     {% if bookings %}
-        <div class="row">
+        <div class="row g-4">
             {% for booking in bookings %}
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
-                        <div class="card-header border-0 text-white py-3 
-                            {% if booking.booking_type == 'movie' %} bg-danger
-                            {% elif booking.booking_type == 'bus' %} bg-warning text-dark
-                            {% else %} bg-primary {% endif %}">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden bg-surface route-card" style="border-left: 4px solid var(--primary) !important;">
+                        <div class="card-header border-0 py-3 
+                            {% if booking.type|lower == 'movie' %} bg-danger text-white
+                            {% elif booking.type|lower == 'bus' %} bg-success text-white
+                            {% else %} bg-primary text-white {% endif %}" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3));">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="fw-bold text-uppercase">
-                                    {% if booking.booking_type == 'movie' %} <i class="fa-solid fa-film me-1"></i>
-                                    {% elif booking.booking_type == 'bus' %} <i class="fa-solid fa-bus me-1"></i>
-                                    {% else %} <i class="fa-solid fa-train me-1"></i> {% endif %}
-                                    {{ booking.booking_type }}
+                                <span class="fw-bold text-uppercase" style="letter-spacing: 1px;">
+                                    {% if booking.type|lower == 'movie' %} <i class="bi bi-film me-1"></i>
+                                    {% elif booking.type|lower == 'bus' %} <i class="bi bi-bus-front me-1"></i>
+                                    {% else %} <i class="bi bi-train-front me-1"></i> {% endif %}
+                                    {{ booking.type }}
                                 </span>
-                                <span class="badge bg-light text-dark rounded-pill">{{ booking.status }}</span>
+                                <span class="badge bg-light text-dark rounded-pill shadow-sm">Confirmed</span>
                             </div>
                         </div>
-                        <div class="card-body bg-light">
+                        <div class="card-body bg-surface-light">
                             <p class="text-muted small mb-1">Booking ID: #{{ booking.id }}</p>
-                            <h5 class="fw-bold mb-3">Ref ID: {{ booking.reference_id }}</h5>
+                            <h5 class="fw-bold mb-3 text-light">{{ booking.details }}</h5>
                             
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted"><i class="fa-solid fa-chair me-1"></i> Seats:</span>
-                                <span class="fw-bold">{{ booking.seats }}</span>
+                                <span class="text-muted"><i class="bi bi-person-fill me-1"></i> Seats:</span>
+                                <span class="fw-bold text-light">{{ booking.seats }}</span>
                             </div>
                             
-                            {% if booking.pnr %}
+                            {% if booking.selected_seats %}
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted"><i class="fa-solid fa-hashtag me-1"></i> PNR:</span>
-                                    <span class="fw-bold text-primary">{{ booking.pnr }}</span>
+                                    <span class="text-muted"><i class="bi bi-geo-alt-fill me-1"></i> Selected:</span>
+                                    <span class="fw-bold text-primary">{{ booking.selected_seats }}</span>
                                 </div>
                             {% endif %}
                             
-                            <div class="d-flex justify-content-between mt-3 pt-3 border-top">
+                            <div class="d-flex justify-content-between mt-3 pt-3 border-top border-secondary">
                                 <span class="text-muted">Total Paid:</span>
-                                <span class="fw-bold text-success">₹{{ booking.total_amount }}</span>
+                                <span class="fw-bold text-success fs-5">₹{{ booking.total }}</span>
                             </div>
                         </div>
-                        <div class="card-footer bg-white text-muted small text-center">
-                            Booked on: {{ booking.created_at.strftime('%Y-%m-%d %H:%M') }}
+                        <div class="card-footer bg-surface text-muted small text-center border-top border-secondary py-3">
+                            <i class="bi bi-clock-history"></i> Booked on: {{ booking.created_at }}
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <div class="text-center py-5">
-            <i class="fa-solid fa-ticket-simple fa-4x text-muted mb-3 opacity-50"></i>
-            <h4>No bookings found</h4>
+        <div class="text-center py-5 auth-card rounded-4 shadow-lg p-5">
+            <i class="bi bi-ticket-detailed fa-4x text-muted mb-3 opacity-50" style="font-size: 4rem;"></i>
+            <h4 class="text-light mt-3">No bookings found</h4>
             <p class="text-muted">You haven't made any bookings yet.</p>
-            <a href="{{ url_for('index') }}" class="btn btn-primary mt-3 rounded-pill px-4">Start Exploring</a>
+            <a href="{{ url_for('index') }}" class="btn btn-primary mt-3 rounded-pill px-4 py-2">Start Exploring</a>
         </div>
     {% endif %}
 </div>

@@ -1,40 +1,60 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="text-center py-5">
-    <h1 class="display-4 fw-bold">Welcome to Ticket<span class="text-primary">Hub</span></h1>
-    <p class="lead text-muted">Your unified platform for booking Movies, Buses, and Trains.</p>
+
+{% macro category_tile(route, title, desc, icon, color_class, image) %}
+<div class="col-lg-4 col-md-6">
+    <a href="{{ url_for(route) }}" class="text-decoration-none h-100 d-block">
+        <div class="card h-100 shadow-sm category-card border-0 position-relative overflow-hidden" style="border-radius: 24px; min-height: 280px;">
+            <div class="tile-bg position-absolute w-100 h-100" style="background-image: url('{{ url_for('static', filename='images/' + image) }}'); background-size: cover; background-position: center;"></div>
+            <div class="tile-overlay position-absolute w-100 h-100" style="background: linear-gradient(to top, rgba(10,10,15,0.95), rgba(10,10,15,0.3));"></div>
+            <div class="card-body text-center p-4 position-relative d-flex flex-column justify-content-end align-items-center h-100">
+                <div class="icon-box mb-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; background: rgba(255,255,255,0.05); border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);">
+                    <i class="bi {{ icon }} display-5 text-{{ color_class }}" style="filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));"></i>
+                </div>
+                <h3 class="card-title text-white fw-bold mb-1">{{ title }}</h3>
+                <p class="card-text text-light opacity-50 small">{{ desc }}</p>
+            </div>
+        </div>
+    </a>
+</div>
+{% endmacro %}
+
+<div class="hero-section text-center py-5 mb-5 position-relative overflow-hidden" style="border-radius: 30px; background: linear-gradient(135deg, rgba(20,20,31,0.8), rgba(10,10,15,0.9)); border: 1px solid var(--border-color);">
+    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: radial-gradient(circle at 50% -20%, var(--primary-glow), transparent 70%); opacity: 0.3;"></div>
+    <h1 class="display-3 fw-bold mt-4" style="letter-spacing: -1px;">Ticket<span class="text-primary">Hub</span></h1>
+    <p class="lead text-muted mx-auto" style="max-width: 600px;">Your ultimate unified portal for all travel and entertainment bookings. Fast, secure, and aesthetic.</p>
 </div>
 
-<div class="row g-4 mt-2">
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm category-card border-0">
-            <div class="card-body text-center py-5">
-                <i class="bi bi-film display-1 text-primary mb-3"></i>
-                <h3 class="card-title">Movies</h3>
-                <p class="card-text text-muted">Book tickets for the latest blockbusters in your favorite theatres.</p>
-                <a href="{{ url_for('movies') }}" class="btn btn-primary mt-3 px-4 rounded-pill">Book Movies</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm category-card border-0">
-            <div class="card-body text-center py-5">
-                <i class="bi bi-bus-front display-1 text-success mb-3"></i>
-                <h3 class="card-title">Buses</h3>
-                <p class="card-text text-muted">Find luxury and comfortable bus rides across major cities.</p>
-                <a href="{{ url_for('buses') }}" class="btn btn-success mt-3 px-4 rounded-pill">Search Buses</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm category-card border-0">
-            <div class="card-body text-center py-5">
-                <i class="bi bi-train-front display-1 text-danger mb-3"></i>
-                <h3 class="card-title">Trains</h3>
-                <p class="card-text text-muted">Check availability and book train tickets seamlessly.</p>
-                <a href="{{ url_for('trains') }}" class="btn btn-danger mt-3 px-4 rounded-pill">Search Trains</a>
-            </div>
-        </div>
-    </div>
+<div class="row g-4 justify-content-center mb-5">
+    {{ category_tile('flights', 'Flights', 'Travel the world with ease', 'bi-airplane', 'info', 'flights_tile_1777126269922.png') }}
+    {{ category_tile('hotels', 'Hotels', 'Premium stays everywhere', 'bi-building', 'warning', 'hotel_tile_1777127039747.png') }}
+    {{ category_tile('cabs', 'Cabs', 'Instant city travel', 'bi-taxi-front', 'info', 'cab_tile_1777127054225.png') }}
+    {{ category_tile('events', 'Events', 'Hottest live concerts', 'bi-music-note-beamed', 'warning', 'events_tile_1777126289507.png') }}
+    {{ category_tile('movies', 'Movies', 'Latest blockbusters', 'bi-film', 'primary', 'movies_tile_1777126336280.png') }}
+    {{ category_tile('buses', 'Buses', 'Comfortable bus rides', 'bi-bus-front', 'success', 'bus_tile_1777126352590.png') }}
+    {{ category_tile('trains', 'Trains', 'Seamless rail travel', 'bi-train-front', 'danger', 'train_tile_1777126369418.png') }}
 </div>
+
+<style>
+.category-card {
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.category-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6) !important;
+}
+.category-card:hover .tile-bg {
+    transform: scale(1.1);
+}
+.category-card:hover .icon-box {
+    background: rgba(255,255,255,0.15);
+    transform: scale(1.1) rotate(5deg);
+}
+.tile-bg {
+    transition: transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.icon-box {
+    transition: all 0.5s ease;
+}
+</style>
 {% endblock %}

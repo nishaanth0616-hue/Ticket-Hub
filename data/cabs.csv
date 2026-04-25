@@ -1,0 +1,7 @@
+id,provider,type,source,destination,price,image
+1,Uber Premium,Sedan,Mumbai,Airport,1200,https://source.unsplash.com/800x600/?taxi-mumbai
+2,Ola Prime,SUV,Bangalore,Whitefield,800,https://source.unsplash.com/800x600/?car-city
+3,Rapido Plus,Bike,Hyderabad,HITEC City,250,https://source.unsplash.com/800x600/?bike-fast
+4,BluSmart Electric,EV,Delhi,Gurugram,900,https://source.unsplash.com/800x600/?electric-car
+5,Meru Cabs,Luxury,Chennai,OMR,1500,https://source.unsplash.com/800x600/?limo-car
+6,Savaari,Outstation,Pune,Mahabaleshwar,4500,https://source.unsplash.com/800x600/?travel-car

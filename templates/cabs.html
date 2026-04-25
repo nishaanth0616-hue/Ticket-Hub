@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row mb-5 justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow-sm border-0 p-4 search-card auth-card">
+            <h3 class="mb-3"><i class="bi bi-taxi-front text-info me-2"></i> Search Cabs</h3>
+            <form method="POST" action="{{ url_for('cabs') }}" class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label text-muted">Pickup Location</label>
+                    <input type="text" class="form-control" name="source" placeholder="E.g., Mumbai" value="{{ request.form.get('source', '') }}" required>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label text-muted">Drop Location</label>
+                    <input type="text" class="form-control" name="destination" placeholder="E.g., Airport" value="{{ request.form.get('destination', '') }}" required>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-info w-100 py-2 text-white">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    {% for cab in cabs %}
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 route-card h-100" style="border-left: 4px solid #0dcaf0 !important;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="card-title fw-bold m-0 text-info"><i class="bi bi-taxi-front"></i> {{ cab.provider }}</h5>
+                    <span class="badge bg-dark border border-secondary">{{ cab.type }}</span>
+                </div>
+                <div class="d-flex justify-content-between text-muted mb-3 mt-3">
+                    <div>
+                        <div class="fw-bold text-light fs-5">{{ cab.source }}</div>
+                    </div>
+                    <div class="text-center px-3 flex-grow-1 position-relative pt-2">
+                        <hr class="my-1 border-2 text-info">
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-light fs-5">{{ cab.destination }}</div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-end mt-4">
+                    <div>
+                        <div class="fs-4 fw-bold text-white">₹{{ cab.price }}</div>
+                    </div>
+                    <a href="{{ url_for('cab_booking', cab_id=cab.id) }}" class="btn btn-info px-4 rounded-pill text-white">Book Cab</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

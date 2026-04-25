@@ -1,17 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;600;700&display=swap');
 
 :root {
-    --bg-main: #0a0a0f;
-    --bg-surface: #14141f;
-    --bg-surface-light: #1e1e2d;
+    --bg-main: #050508;
+    --bg-surface: rgba(20, 20, 31, 0.6);
+    --bg-surface-light: rgba(30, 30, 45, 0.7);
     --primary: #00f2fe;
-    --primary-glow: rgba(0, 242, 254, 0.4);
+    --primary-glow: rgba(0, 242, 254, 0.3);
     --secondary: #4facfe;
     --accent: #ff0844;
-    --accent-glow: rgba(255, 8, 68, 0.4);
+    --accent-glow: rgba(255, 8, 68, 0.3);
     --text-bright: #ffffff;
-    --text-muted: #8b8b9e;
-    --border-color: rgba(255, 255, 255, 0.1);
+    --text-muted: #a0a0b5;
+    --border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-main);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--bg-surface-light);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
 }
 
 body {
@@ -57,11 +72,12 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 
 /* Premium Card Aesthetics (Dark Theme) */
 .card {
-    border-radius: 20px;
+    border-radius: 24px;
     background: var(--bg-surface);
+    backdrop-filter: blur(16px);
     border: 1px solid var(--border-color) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
     color: var(--text-bright);
 }
 
@@ -265,6 +281,70 @@ hr {
     .seats-container .me-3 {
         font-size: 12px;
         width: 15px !important;
+    }
+}
+
+/* Animations & Transitions */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.container {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.route-card {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+}
+
+.route-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 15px 35px var(--primary-glow) !important;
+    z-index: 10;
+}
+
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+.btn:active::after {
+    width: 200px;
+    height: 200px;
+}
+
+.navbar {
+    animation: fadeInDown 0.5s ease-out forwards;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 

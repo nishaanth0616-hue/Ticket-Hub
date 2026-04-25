@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row mb-5 justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow-sm border-0 p-4 search-card auth-card">
+            <h3 class="mb-3"><i class="bi bi-airplane-fill text-info me-2"></i> Search Flights</h3>
+            <form method="POST" action="{{ url_for('flights') }}" class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label text-muted">From</label>
+                    <input type="text" class="form-control" name="source" placeholder="E.g., Delhi" value="{{ request.form.get('source', '') }}" required>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label text-muted">To</label>
+                    <input type="text" class="form-control" name="destination" placeholder="E.g., Mumbai" value="{{ request.form.get('destination', '') }}" required>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-info w-100 py-2 text-white">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if request.method == 'POST' %}
+    <h4 class="mb-3">Search Results 
+        {% if flights %}<span class="badge bg-info ms-2">{{ flights|length }} Found</span>{% endif %}
+    </h4>
+    {% if not flights %}
+        <div class="alert alert-warning text-center">No flights found for this route.</div>
+    {% endif %}
+{% else %}
+    <h4 class="mb-3">Available Flights</h4>
+{% endif %}
+
+<div class="row g-3">
+    {% for flight in flights %}
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 route-card h-100" style="border-left: 4px solid #0dcaf0 !important;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="card-title fw-bold m-0 text-info"><i class="bi bi-airplane"></i> {{ flight.airline }}</h5>
+                    <span class="badge bg-dark border border-secondary">{{ flight.flight_no }}</span>
+                </div>
+                <div class="d-flex justify-content-between text-muted mb-3 mt-3">
+                    <div>
+                        <div class="fw-bold text-light fs-5">{{ flight.departure }}</div>
+                        <small>{{ flight.source }}</small>
+                    </div>
+                    <div class="text-center px-3 flex-grow-1 position-relative pt-2">
+                        <small class="d-block position-absolute w-100 text-center" style="top: -10px;"><i class="bi bi-cloud text-secondary"></i> To <i class="bi bi-cloud text-secondary"></i></small>
+                        <hr class="my-1 border-2 text-info">
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-light fs-5">{{ flight.arrival }}</div>
+                        <small>{{ flight.destination }}</small>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-end mt-4">
+                    <div>
+                        <span class="text-info small fw-medium"><i class="bi bi-people"></i> {{ flight.seats }} Seats Left</span>
+                        <div class="fs-4 fw-bold text-white">₹{{ flight.price }}</div>
+                    </div>
+                    <a href="{{ url_for('flight_booking', flight_id=flight.id) }}" class="btn btn-info px-4 rounded-pill text-white">Book Flight</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

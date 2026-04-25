@@ -1,0 +1,11 @@
+id,airline,flight_no,source,destination,departure,arrival,price,seats
+1,IndiGo,6E-101,Delhi,Mumbai,06:00 AM,08:15 AM,4500,45
+2,Air India,AI-302,Delhi,Bangalore,09:30 AM,12:20 PM,5500,30
+3,Vistara,UK-811,Mumbai,Goa,11:00 AM,12:15 PM,3200,20
+4,SpiceJet,SG-505,Chennai,Delhi,05:00 PM,07:50 PM,4800,25
+5,Akasa Air,QP-130,Bangalore,Hyderabad,08:00 AM,09:15 AM,2500,50
+6,IndiGo,6E-422,Kolkata,Delhi,07:30 PM,10:00 PM,5200,40
+7,Air India Express,IX-211,Hyderabad,Chennai,02:15 PM,03:30 PM,2800,15
+8,Vistara,UK-990,Mumbai,Bangalore,04:45 PM,06:30 PM,4100,35
+9,SpiceJet,SG-808,Delhi,Srinagar,10:00 AM,11:45 AM,6000,10
+10,IndiGo,6E-755,Chennai,Kochi,06:30 AM,07:45 AM,2200,28

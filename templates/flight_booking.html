@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0 mb-4 bg-info text-white">
+            <div class="card-body">
+                <h4 class="mb-3"><i class="bi bi-airplane-engines"></i> {{ flight.airline }}</h4>
+                <div class="badge bg-white text-info mb-3">{{ flight.flight_no }}</div>
+                <div class="d-flex justify-content-between mb-3">
+                    <div>
+                        <div class="fw-bold">{{ flight.departure }}</div>
+                        <small>{{ flight.source|capitalize }}</small>
+                    </div>
+                    <i class="bi bi-arrow-right"></i>
+                    <div class="text-end">
+                        <div class="fw-bold">{{ flight.arrival }}</div>
+                        <small>{{ flight.destination|capitalize }}</small>
+                    </div>
+                </div>
+                <div class="fs-5 mt-2 pt-2 border-top border-info-subtle">
+                    Price: <strong>₹{{ flight.price }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 form-card mb-4" style="border-top: 4px solid #0dcaf0 !important;">
+            <div class="card-body p-0">
+                <div id="map-container" class="position-relative" style="height: 350px; width: 100%; overflow: hidden; border-radius: 20px;">
+                    <!-- Google Map explicitly showing directions -->
+                    <iframe 
+                        width="100%" 
+                        height="100%" 
+                        style="border:0; filter: contrast(1.1) brightness(0.9) hue-rotate(180deg);" 
+                        loading="lazy" 
+                        allow="geolocation"
+                        allowfullscreen 
+                        referrerpolicy="no-referrer-when-downgrade" 
+                        src="https://maps.google.com/maps?saddr={{ flight.source }}&daddr={{ flight.destination }}&t=&z=5&ie=UTF8&iwloc=&output=embed">
+                    </iframe>
+                    <!-- Simulated Route Banner Layer with Animation -->
+                    <div class="position-absolute top-0 start-0 w-100 p-2 text-center" style="background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(5px);">
+                        <div class="d-flex justify-content-center align-items-center text-light fw-bold" style="letter-spacing: 1px;">
+                            <span class="text-info"><i class="bi bi-geo-alt-fill"></i> {{ flight.source }}</span>
+                            <span class="mx-3 text-muted" style="position:relative; width: 100px; display:inline-block; height: 24px;">
+                                <span style="position: absolute; width: 100%; height: 2px; background: linear-gradient(90deg, #0dcaf0, transparent); top: 50%; left: 0;"></span>
+                                <i class="bi bi-airplane-fill fs-5 text-info position-absolute" style="top: -2px; animation: driveVehicle 2s infinite linear;"></i>
+                            </span>
+                            <span class="text-white"><i class="bi bi-geo-alt-fill"></i> {{ flight.destination }}</span>
+                        </div>
+                    </div>
+                    <!-- Distance Overlay -->
+                    <div class="position-absolute bottom-0 start-0 w-100 p-3" style="background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);">
+                        <div id="distanceBox" class="d-flex justify-content-between align-items-end">
+                            <div>
+                                <small class="text-primary text-uppercase fw-bold" id="distStatus"><i class="bi bi-radar" style="display:inline-block; animation: spinRadar 2s linear infinite;"></i> Locating...</small>
+                                <h4 class="text-white mb-0 mt-1" id="routeDistance" style="text-shadow: 0 0 10px rgba(13,202,240,0.5);">Calculating...</h4>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted text-uppercase">Flight Time</small>
+                                <h5 class="text-info mb-0" id="routeETA">-- hrs -- mins</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0 auth-card">
+            <div class="card-body p-4">
+                <h4 class="mb-4 text-info">Select Flight Seats</h4>
+                
+                <form method="POST" action="{{ url_for('add_to_cart') }}" id="flightForm">
+                    <input type="hidden" name="type" value="Flight">
+                    <input type="hidden" name="details" value="{{ flight.airline }} - {{ flight.source }} to {{ flight.destination }}">
+                    <input type="hidden" name="price" value="{{ flight.price }}">
+                    <input type="hidden" name="seats" id="fFormSeats" value="0">
+                    <input type="hidden" name="selected_seats" id="fFormSeatNumbers" value="">
+
+                    <div class="row mb-5 justify-content-center">
+                        <div class="col-auto overflow-auto">
+                            <div class="border rounded p-4 pb-2 bg-light d-flex" style="width: intrinsic; border-radius: 100px 100px 20px 20px !important;">
+                                <div class="me-4 border-end pe-4">
+                                    <!-- Left Column -->
+                                    <div class="d-flex flex-column gap-2">
+                                        {% for r in range(1, 11) %}
+                                            <div class="d-flex gap-2">
+                                                <div class="flight-seat border ms-1" data-seat="{{r}}A" title="{{r}}A"></div>
+                                                <div class="flight-seat border" data-seat="{{r}}B" title="{{r}}B"></div>
+                                                <div class="flight-seat border" data-seat="{{r}}C" title="{{r}}C"></div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div>
+                                    <!-- Right Column -->
+                                    <div class="d-flex flex-column gap-2">
+                                        {% for r in range(1, 11) %}
+                                            <div class="d-flex gap-2">
+                                                <div class="flight-seat border" data-seat="{{r}}D" title="{{r}}D"></div>
+                                                <div class="flight-seat border" data-seat="{{r}}E" title="{{r}}E"></div>
+                                                <div class="flight-seat border me-1" data-seat="{{r}}F" title="{{r}}F"></div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-4 mb-4 small text-muted">
+                        <div class="d-flex align-items-center"><div class="flight-seat bg-surface border me-2"></div> Available</div>
+                        <div class="d-flex align-items-center"><div class="flight-seat bg-info border-info me-2"></div> Selected</div>
+                        <div class="d-flex align-items-center"><div class="flight-seat bg-secondary bg-opacity-50 border-secondary me-2"></div> Booked</div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-end mt-4 pt-3 border-top border-secondary">
+                        <div>
+                            <div class="text-muted mb-1">Total Fare</div>
+                            <h3 class="fw-bold mb-0 text-info">₹<span id="fTotalPrice">0</span></h3>
+                            <small id="fSelectedSeatsLabel" class="text-muted">No seats selected</small>
+                        </div>
+                        <button type="button" class="btn btn-info px-5 py-2 btn-lg text-white" id="fBookBtn" disabled>Proceed</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const flightSeats = document.querySelectorAll('.flight-seat');
+    const fPrice = parseInt("{{ flight.price }}") || 0;
+    let fSelected = [];
+
+    // Randomize booked seats based on availability roughly
+    const bookedCount = 60 - (parseInt("{{ flight.seats }}") || 0);
+    let c = 0;
+    while(c < bookedCount) {
+        let idx = Math.floor(Math.random() * flightSeats.length);
+        if(!flightSeats[idx].classList.contains('booked')) {
+            flightSeats[idx].classList.add('booked');
+            flightSeats[idx].style.pointerEvents = 'none';
+            c++;
+        }
+    }
+
+    flightSeats.forEach(seat => {
+        seat.addEventListener('click', () => {
+            if(seat.classList.contains('booked')) return;
+            
+            seat.classList.toggle('selected');
+            const dataSeat = seat.dataset.seat;
+            if(seat.classList.contains('selected')) fSelected.push(dataSeat);
+            else fSelected = fSelected.filter(s => s !== dataSeat);
+            
+            document.getElementById('fTotalPrice').innerText = fSelected.length * fPrice;
+            document.getElementById('fSelectedSeatsLabel').innerText = fSelected.length ? fSelected.join(', ') : 'No seats selected';
+            document.getElementById('fFormSeats').value = fSelected.length;
+            document.getElementById('fFormSeatNumbers').value = fSelected.join(', ');
+            document.getElementById('fBookBtn').disabled = fSelected.length === 0;
+        });
+    });
+
+    document.getElementById('fBookBtn').addEventListener('click', () => {
+        document.getElementById('flightForm').submit();
+    });
+
+    // Distance and Location Animation
+    setTimeout(() => {
+        let dest = "{{ flight.destination }}";
+        let source = "{{ flight.source }}";
+        let hash = 0;
+        let str = source + dest;
+        for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        let distance = Math.abs(hash % 2000) + 500; 
+        let speed = 800; // Flight speed km/h
+        let hours = Math.floor(distance / speed);
+        let mins = Math.round(((distance / speed) - hours) * 60);
+        if (hours === 0) hours = 1; // Minimum 1 hr for display
+        
+        document.getElementById('distStatus').innerHTML = `<i class="bi bi-check-circle-fill text-info"></i> Route Confirmed`;
+        document.getElementById('distStatus').classList.replace('text-primary', 'text-info');
+        document.getElementById('routeDistance').innerHTML = `<i class="bi bi-compass text-info"></i> ${distance} km`;
+        document.getElementById('routeETA').innerHTML = `<i class="bi bi-clock-fill text-white"></i> ${hours}h ${mins}m`;
+    }, 2000);
+</script>
+<style>
+.flight-seat {
+    width: 35px;
+    height: 45px;
+    background-color: var(--bg-surface-light);
+    border-radius: 5px 5px 15px 15px;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.flight-seat:hover:not(.booked) {
+    border-color: #0dcaf0;
+    box-shadow: 0 0 10px rgba(13, 202, 240, 0.4);
+}
+.flight-seat.selected {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    box-shadow: 0 0 15px rgba(13, 202, 240, 0.5);
+}
+.flight-seat.booked {
+    background-color: #2a2a35;
+    border-color: #1a1a25;
+}
+
+@keyframes driveVehicle { 
+    0% { left: 0%; opacity: 0; } 
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { left: 100%; opacity: 0; } 
+}
+@keyframes spinRadar { 
+    100% { transform: rotate(360deg); } 
+}
+
+/* Make seats responsive */
+@media (max-width: 768px) {
+    .flight-seat {
+        width: 25px;
+        height: 35px;
+        border-radius: 4px 4px 10px 10px;
+    }
+}
+</style>
+{% endblock %}

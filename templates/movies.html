@@ -4,15 +4,15 @@
 <div class="row g-4">
     {% for movie in movies %}
     <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="card movie-card h-100 shadow-sm border-0 position-relative">
+        <div class="card movie-card route-card h-100 shadow-sm border-0 position-relative">
             <div class="badge bg-danger position-absolute top-0 end-0 m-2"><i class="bi bi-star-fill text-warning"></i> {{ movie.rating }}</div>
-            <img src="{{ movie.image }}" referrerpolicy="no-referrer" class="card-img-top" alt="{{ movie.title }}" style="height: 350px; object-fit: cover;">
+            <img src="{{ movie.image }}" referrerpolicy="no-referrer" class="card-img-top" alt="{{ movie.title }}" style="height: 350px; object-fit: cover; border-top-left-radius: 20px; border-top-right-radius: 20px;">
             <div class="card-body">
                 <h5 class="card-title fw-bold text-truncate" title="{{ movie.title }}">{{ movie.title }}</h5>
                 <p class="card-text text-muted mb-2"><small>{{ movie.genre }}</small></p>
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="fw-bold text-primary">₹{{ movie.price }}</span>
-                    <a href="{{ url_for('movie_booking', movie_id=movie.id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">Book</a>
+                    <a href="{{ url_for('movie_booking', movie_id=movie.id) }}" class="btn btn-primary btn-sm rounded-pill px-3">Book Now</a>
                 </div>
             </div>
         </div>

@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0 mb-4 bg-warning text-dark">
+            <div class="card-body">
+                <h4 class="mb-3 fw-bold"><i class="bi bi-music-note-beamed"></i> {{ event.title }}</h4>
+                <div class="badge bg-dark text-warning mb-3 px-3 py-2 rounded-pill">{{ event.category }}</div>
+                
+                <div class="mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-geo-alt-fill fs-5 me-2 text-danger"></i>
+                        <div>
+                            <small class="d-block text-muted">Venue</small>
+                            <strong>{{ event.location }}</strong>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-calendar-event fs-5 me-2 text-primary"></i>
+                        <div>
+                            <small class="d-block text-muted">Date & Time</small>
+                            <strong>{{ event.date }} at {{ event.time }}</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="fs-5 mt-3 pt-3 border-top border-dark border-opacity-25 d-flex justify-content-between align-items-center">
+                    <span>Ticket Price:</span>
+                    <strong>₹{{ event.price }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 form-card mb-4" style="border-top: 4px solid #ffc107 !important;">
+            <div class="card-body p-0">
+                <div id="map-container" class="position-relative" style="height: 300px; width: 100%; overflow: hidden; border-radius: 20px;">
+                    <!-- Fixed Google Map explicitly pointing to the venue -->
+                    <iframe 
+                        width="100%" 
+                        height="100%" 
+                        style="border:0; filter: contrast(1.1) brightness(0.9) grayscale(0.2);" 
+                        loading="lazy" 
+                        allowfullscreen 
+                        referrerpolicy="no-referrer-when-downgrade" 
+                        src="https://maps.google.com/maps?q={{ event.location }}&t=&z=14&ie=UTF8&iwloc=&output=embed">
+                    </iframe>
+                    <!-- Simulated Event Banner Layer -->
+                    <div class="position-absolute top-0 start-0 w-100 p-2 text-center" style="background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(5px);">
+                        <div class="d-flex justify-content-center align-items-center text-light fw-bold" style="letter-spacing: 1px;">
+                            <i class="bi bi-geo-alt-fill text-danger me-2"></i> <span class="text-white">{{ event.location }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0 auth-card">
+            <div class="card-body p-4">
+                <h4 class="mb-4 text-warning">Select Event Seats</h4>
+                
+                <form method="POST" action="{{ url_for('add_to_cart') }}" id="eventForm">
+                    <input type="hidden" name="type" value="Event">
+                    <input type="hidden" name="details" value="{{ event.title }} at {{ event.location }}">
+                    <input type="hidden" name="price" value="{{ event.price }}">
+                    <input type="hidden" name="seats" id="eFormSeats" value="0">
+                    <input type="hidden" name="selected_seats" id="eFormSeatNumbers" value="">
+
+                    <div class="text-center mb-4">
+                        <div class="bg-dark text-white rounded-pill py-2 px-5 d-inline-block fw-bold shadow-sm" style="border: 2px solid #ffc107; letter-spacing: 5px;">
+                            STAGE
+                        </div>
+                    </div>
+
+                    <div class="row mb-5 justify-content-center">
+                        <div class="col-auto overflow-auto">
+                            <div class="p-4 pb-2 bg-surface-light rounded-4 border border-secondary" style="width: intrinsic;">
+                                <div class="d-flex flex-column gap-2 align-items-center">
+                                    <!-- Rows of seats (Theater style) -->
+                                    {% for r in range(1, 9) %}
+                                        <div class="d-flex gap-2">
+                                            {% for c in range(1, 11) %}
+                                                {% if r > 4 and loop.index == 5 %}
+                                                    <div style="width: 20px;"></div> <!-- Aisle for back rows -->
+                                                {% endif %}
+                                                <div class="event-seat border" data-seat="Row{{r}}-{{c}}" title="Row{{r}}-{{c}}"></div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-4 mb-4 small text-muted">
+                        <div class="d-flex align-items-center"><div class="event-seat bg-surface border me-2"></div> Available</div>
+                        <div class="d-flex align-items-center"><div class="event-seat bg-warning border-warning me-2"></div> Selected</div>
+                        <div class="d-flex align-items-center"><div class="event-seat bg-secondary bg-opacity-50 border-secondary me-2"></div> Sold Out</div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-end mt-4 pt-4 border-top border-secondary">
+                        <div>
+                            <div class="text-muted mb-1">Total Amount</div>
+                            <h2 class="fw-bold mb-0 text-warning">₹<span id="eTotalPrice">0</span></h2>
+                            <small id="eSelectedSeatsLabel" class="text-muted">No seats selected</small>
+                        </div>
+                        <button type="button" class="btn btn-warning px-5 py-3 rounded-pill fw-bold text-dark fs-5 shadow-sm" id="eBookBtn" disabled>Buy Tickets</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const eventSeats = document.querySelectorAll('.event-seat');
+    const ePrice = parseInt("{{ event.price }}") || 0;
+    let eSelected = [];
+
+    // Randomize booked seats based on availability roughly
+    const totalSeats = eventSeats.length;
+    const availableSeats = Math.min(totalSeats, parseInt("{{ event.seats }}") || 0);
+    const bookedCount = totalSeats - availableSeats;
+    
+    let c = 0;
+    while(c < bookedCount) {
+        let idx = Math.floor(Math.random() * eventSeats.length);
+        if(!eventSeats[idx].classList.contains('booked')) {
+            eventSeats[idx].classList.add('booked');
+            eventSeats[idx].style.pointerEvents = 'none';
+            c++;
+        }
+    }
+
+    eventSeats.forEach(seat => {
+        seat.addEventListener('click', () => {
+            if(seat.classList.contains('booked')) return;
+            
+            seat.classList.toggle('selected');
+            const dataSeat = seat.dataset.seat;
+            if(seat.classList.contains('selected')) eSelected.push(dataSeat);
+            else eSelected = eSelected.filter(s => s !== dataSeat);
+            
+            document.getElementById('eTotalPrice').innerText = eSelected.length * ePrice;
+            document.getElementById('eSelectedSeatsLabel').innerText = eSelected.length ? eSelected.join(', ') : 'No seats selected';
+            document.getElementById('eFormSeats').value = eSelected.length;
+            document.getElementById('eFormSeatNumbers').value = eSelected.join(', ');
+            document.getElementById('eBookBtn').disabled = eSelected.length === 0;
+        });
+    });
+
+    document.getElementById('eBookBtn').addEventListener('click', () => {
+        document.getElementById('eventForm').submit();
+    });
+</script>
+<style>
+.event-seat {
+    width: 30px;
+    height: 30px;
+    background-color: var(--bg-surface);
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.event-seat:hover:not(.booked) {
+    border-color: #ffc107;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+    transform: scale(1.1);
+}
+.event-seat.selected {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.6);
+}
+.event-seat.booked {
+    background-color: #2a2a35;
+    border-color: #1a1a25;
+}
+
+@media (max-width: 768px) {
+    .event-seat {
+        width: 25px;
+        height: 25px;
+    }
+}
+</style>
+{% endblock %}
